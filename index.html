@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+    <meta charset="utf-8">
+    <title>初步实现轮播</title>
+
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .window {
+            width: 259px;
+            border: 4px solid green;
+            overflow: hidden;
+        }
+
+        .images {
+            display: flex;
+            align-items: flex-start;
+            border: 1px solid red;
+            transition: transform 0.5s;
+        }
+        .red{
+            color: red;
+        }
+    </style>
+
+
+</head>
+
+<body>
+
+
+    <div class="window">
+        <div class="images" id="images">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRprIjdHtQjJ7szfv8KY28bK4c5iBE-VcyLBKcGFBLJ3ATtM5Ue1w "
+                alt="">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSU0FjBCflAtiPwMlLcYGq-hfTZ_Fgq59TBAzQ7XIqgKHmona_XwQ"
+                alt="">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgIEazZi69dK62PhhZ57wOMqT1Mj3L5exJqwW39_T66lHHNie2dw"
+                alt="">
+        </div>
+    </div>
+    <!--   初步实现html代码
+    <button id="p1">第1张</button>
+    <button id="p2">第2张</button>
+    <button id="p3">第3张</button>
+        -->
+    <!--html代码改进一：可以存放无限多个图片按钮，都能完成轮播-->
+    <span id="buttons">
+        <span>第1张</span>
+        <span>第2张</span>
+        <span>第3张</span>
+    </span>
+
+    <script>
+        /*初步实现js代码
+        $(p1).on('click', function () {
+            $(images).css({
+                transform: "transLateX(0)"
+            })
+        })
+        $(p2).on('click', function () {
+            $(images).css({
+                transform: "transLateX(-259px)"
+            })
+        })
+        $(p3).on('click', function () {
+            $(images).css({
+                transform: "transLateX(-518px)"
+            })
+        })
+        */
+
+
+        //js代码改进一：可以存放无限多个图片按钮，都能完成轮播
+        var allButtons = $('#buttons > span')
+        for (let i = 0; i < allButtons.length; i++) {
+            $(allButtons[i]).on('click', function (x) {
+
+                /*   需要知道被点击的几个span元素的DOM方法 
+                var n 
+                    var childern = span.parentNode.childern
+                    for(let i=0;i<childern.length;i++){
+                      if(childern[i] === span){
+                        span = i
+                        break
+                      }
+                    }
+                */
+
+                //jQuery实现
+                var index = $(x.currentTarget).index()
+
+                //遍历样式
+                var n = index * -259
+                $(images).css({
+                    transform: 'translate(' + n + 'px)'
+                })
+            })
+        }
+
+        /*js代码改进二：可以存放无限多个图片按钮，都能完成轮播
+        var n = 0
+        var size = allButtons.length
+        console.log(n % size) //3 4 5对应的余数是 0 1 2
+        // 获取一个元素的第n个儿子的DOm API
+        // parent.children[n]
+        // 获取一个元素的第n个儿子的jQuery API
+        //eq就是equal的意思，他会找出DOM对应的节点，并封装成jQuery对象
+        //triggerAPI会触发事件函数，后面接函数名
+        allButtons.eq(n % 3).trigger('click')
+        setInterval(() => {
+            n += 1
+            allButtons.eq(n % size).trigger('click')
+        }, 1000)
+
+        */
+
+        //js代码改进三：实现自动播放,鼠标划进去后会停止，按钮会高亮
+        var allButtons = $('#buttons > span')
+        for (let i = 0; i < allButtons.length; i++) {
+            $(allButtons[i]).on('click', function (x) {
+
+                /*   需要知道被点击的几个span元素的DOM方法 
+                var n 
+                    var childern = span.parentNode.childern
+                    for(let i=0;i<childern.length;i++){
+                      if(childern[i] === span){
+                        span = i
+                        break
+                      }
+                    }
+                */
+
+                //jQuery实现
+                var index = $(x.currentTarget).index()
+
+                //遍历样式
+                var n = index * -259
+                $(images).css({
+                    transform: 'translate(' + n + 'px)'
+                })
+                n = index
+                allButtons.eq(n)
+                    .addClass('red')
+                    .siblings('.red').removeClass('red')
+            })
+        }
+
+
+
+        //实现自动播放
+        var n = 0
+        var size = allButtons.length
+        // 获取一个元素的第n个儿子的DOm API
+        // parent.children[n]
+        // 获取一个元素的第n个儿子的jQuery API
+        //eq就是equal的意思，他会找出DOM对应的节点，并封装成jQuery对象
+        //triggerAPI会触发事件函数，后面接函数名
+        allButtons.eq(n % size).trigger('click')
+            .addClass('red')
+            .siblings('.red').removeClass('red')
+
+        var timerId = setInterval(() => {
+            n += 1
+            allButtons.eq(n % size).trigger('click')
+                .addClass('red')
+                .siblings('.red').removeClass('red')
+        }, 1000)
+
+
+        $('.window').on('mouseenter', function () {
+            window.clearInterval(timerId)
+        })
+
+
+        $('.window').on('mouseleave', function () {
+            timerId = setInterval(() => {
+                n += 1
+                allButtons.eq(n % size).trigger('click')
+                    .addClass('red')
+                    .siblings('.red').removeClass('red')
+            }, 1000)
+        })
+    </script>
+
+</body>
+
+</html>
